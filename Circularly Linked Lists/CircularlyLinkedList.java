@@ -143,6 +143,5 @@ public class CircularlyLinkedList<E> {
         list.rotate();
         System.out.println(list);
         System.out.println("\n" + "Size of a list: " + list.size);
-        System.out.println("\n");
     }
 }
