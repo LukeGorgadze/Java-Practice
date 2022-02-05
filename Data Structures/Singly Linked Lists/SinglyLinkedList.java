@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Random;
 
-public class SinglyLinkedList<E> {
+public class SinglyLinkedList<E> implements Cloneable {
     private static class Node<E> {
         private E element; // reference to the element stored at this node
         private Node<E> next; // reference to the subsequent node in the list
@@ -104,24 +104,59 @@ public class SinglyLinkedList<E> {
 
     }
 
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+        SinglyLinkedList other = (SinglyLinkedList) o; // use nonparameterized type
+        if (size != other.size)
+            return false;
+        Node walkA = head; // traverse the primary list
+        Node walkB = other.head; // traverse the secondary list
+        while (walkA != null) {
+            if (!walkA.getElement().equals(walkB.getElement()))
+                return false; // mismatch
+            walkA = walkA.getNext();
+            walkB = walkB.getNext();
+        }
+        return true; // if we reach this, everything matched successfully
+    }
+
+    public SinglyLinkedList<E> clone() throws CloneNotSupportedException {
+        // always use inherited Object.clone() to create the initial copy
+        SinglyLinkedList<E> other = (SinglyLinkedList<E>) super.clone(); // safe cast
+        if (size > 0) { // we need independent chain of nodes
+            other.head = new Node<>(head.getElement(), null);
+            Node<E> walk = head.getNext(); // walk through remainder of original list
+            Node<E> otherTail = other.head; // remember most recently created node
+            while (walk != null) { // make a new node storing same element
+                Node<E> newest = new Node<>(walk.getElement(), null);
+                otherTail.setNext(newest); // link previous node to this one
+                otherTail = newest;
+                walk = walk.getNext();
+            }
+        }
+        return other;
+    }
+
     public static void main(String[] args) {
         SinglyLinkedList<Integer> list = new SinglyLinkedList<Integer>();
         Random r = new Random();
-        int randomTest = r.nextInt(0,100);
-        for(int i = 0; i < randomTest; i++)
-        {
-            int randomInt1 = r.nextInt(0,200);
+        int randomTest = r.nextInt(0, 100);
+        for (int i = 0; i < randomTest; i++) {
+            int randomInt1 = r.nextInt(0, 200);
             list.addFirst(randomInt1);
         }
         System.out.println("List before modifying: \t");
         System.out.println(list);
         System.out.println("\n");
-        int randomInt2 = r.nextInt(0,200);
+        int randomInt2 = r.nextInt(0, 200);
         list.addFirst(randomInt2);
         System.out.println("List after modifying: \t");
         System.out.println(list);
         System.out.println("\n");
-        int randomInt3 = r.nextInt(0,200);
+        int randomInt3 = r.nextInt(0, 200);
         System.out.println("Adding " + randomInt3 + " to the end \t");
         list.addLast(randomInt3);
         System.out.println(list);
