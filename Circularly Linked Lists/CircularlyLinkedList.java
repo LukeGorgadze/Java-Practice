@@ -1,7 +1,6 @@
-import java.util.Arrays;
 import java.util.Random;
 
-public class SinglyLinkedList<E> {
+public class CircularlyLinkedList<E> {
     private static class Node<E> {
         private E element; // reference to the element stored at this node
         private Node<E> next; // reference to the subsequent node in the list
@@ -30,15 +29,14 @@ public class SinglyLinkedList<E> {
         }
     }
 
-    // instance variables of the SinglyLinkedList
-    private Node<E> head = null; // head node of the list (or null if empty)
-    private Node<E> tail = null; // last node of the list (or null if empty)
+    // instance variables of the CircularlyLinkedList
+    private Node<E> tail = null; // we store tail (but not head)
     private int size = 0; // number of nodes in the list
 
-    public SinglyLinkedList() {
+    public CircularlyLinkedList() {
     } // constructs an initially empty list
+      // access methods
 
-    // access methods
     public int size() {
         return size;
     }
@@ -50,7 +48,7 @@ public class SinglyLinkedList<E> {
     public E first() { // returns (but does not remove) the first element
         if (isEmpty())
             return null;
-        return head.getElement();
+        return tail.getNext().getElement(); // the head is *after* the tail
     }
 
     public E last() { // returns (but does not remove) the last element
@@ -60,54 +58,57 @@ public class SinglyLinkedList<E> {
     }
 
     // update methods
+    public void rotate() { // rotate the first element to the back of the list
+        if (tail != null) // if empty, do nothing
+            tail = tail.getNext(); // the old head becomes the new tail
+    }
+
     public void addFirst(E e) { // adds element e to the front of the list
-        head = new Node<>(e, head); // create and link a new node
-        if (size == 0)
-            tail = head; // special case: new node becomes tail also
+        if (size == 0) {
+            tail = new Node<>(e, null);
+            tail.setNext(tail); // link to itself circularly
+        } else {
+            Node<E> newest = new Node<>(e, tail.getNext());
+            tail.setNext(newest);
+        }
         size++;
     }
 
     public void addLast(E e) { // adds element e to the end of the list
-        Node<E> newest = new Node<>(e, null); // node will eventually be the tail
-        if (isEmpty())
-            head = newest; // special case: previously empty list
-        else
-            tail.setNext(newest); // new node after existing tail
-        tail = newest; // new node becomes the tail
-        size++;
+        addFirst(e); // insert new element at front of list
+        tail = tail.getNext(); // now new element becomes the tail
     }
 
     public E removeFirst() { // removes and returns the first element
         if (isEmpty())
             return null; // nothing to remove
-        E answer = head.getElement();
-        head = head.getNext(); // will become null if list had only one node
+        Node<E> head = tail.getNext();
+        if (head == tail)
+            tail = null; // must be the only node left
+        else
+            tail.setNext(head.getNext()); // removes ”head” from the list
         size--;
-        if (size == 0)
-            tail = null; // special case as list is now empty
-        return answer;
+        return head.getElement();
     }
-
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        Node<E> temp = head;
+        Node<E> temp = tail.getNext();
         String res = temp.getElement().toString() + ", ";
-        while (temp.getNext() != null) {
+        while (temp.getNext() != tail.getNext()) {
             temp = temp.getNext();
             if (temp.getNext() != null)
                 res += temp.getElement() + ", ";
             else
                 res += temp.getElement();
         }
-        return "SinglyLinkedList: " + "{ " + res + " }";
+        return "CircularlyLinkedList: " + "{ " + res + " }";
 
     }
-
     public static void main(String[] args) {
-        SinglyLinkedList<Integer> list = new SinglyLinkedList<Integer>();
+        CircularlyLinkedList<Integer> list = new CircularlyLinkedList<Integer>();
         Random r = new Random();
-        int randomTest = r.nextInt(0,100);
+        int randomTest = r.nextInt(0,20);
         for(int i = 0; i < randomTest; i++)
         {
             int randomInt1 = r.nextInt(0,200);
@@ -129,8 +130,19 @@ public class SinglyLinkedList<E> {
         System.out.println("Adding " + randomInt3 + " to the start \t");
         list.addFirst(randomInt3);
         System.out.println(list);
+        System.out.println("\n");
+        System.out.println("Removing " + randomInt3 + " from the start \t");
+        list.removeFirst();
+        System.out.println(list);
+        System.out.println("\n");
+        System.out.println("Rotating List \t");
+        list.rotate();
+        System.out.println(list);
+        System.out.println("\n");
+        System.out.println("Rotating List again\t");
+        list.rotate();
+        System.out.println(list);
         System.out.println("\n" + "Size of a list: " + list.size);
-
+        System.out.println("\n");
     }
-
 }

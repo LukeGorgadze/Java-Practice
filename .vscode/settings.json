@@ -2,8 +2,9 @@
     "java.project.sourcePaths": [
         "Two-Dimensional Arrays and Positional Games",
         "Sorting An array",
+        "Singly Linked Lists",
         "PseudoRandom Number Generation",
         "Caesar.java",
-        "Singly Linked Lists"
+        "Circularly Linked Lists"
     ]
 }
